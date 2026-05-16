@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Pokémon</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% include "partials/navbar.html" %}
+
+    <main class="container narrow">
+        <h1>Crear Pokémon</h1>
+
+        <form class="form" method="POST" action="{{ url_for('pokemon.create_route') }}">
+            <label>Número Pokédex
+                <input type="number" name="pokedex_number" required>
+            </label>
+
+            <label>Nombre
+                <input type="text" name="name" required>
+            </label>
+
+            <label>Altura en metros
+                <input type="number" step="0.1" name="height" required>
+            </label>
+
+            <label>Peso en kilos
+                <input type="number" step="0.1" name="weight" required>
+            </label>
+
+            <label>Tipos separados por coma
+                <input type="text" name="types" placeholder="grass, poison" required>
+            </label>
+
+            <label>Habilidades separadas por coma
+                <input type="text" name="abilities" placeholder="overgrow, chlorophyll">
+            </label>
+
+            <label>Descripción
+                <textarea name="description" rows="4"></textarea>
+            </label>
+
+            <label>URL sprite
+                <input type="url" name="sprite">
+            </label>
+
+            <label class="checkbox">
+                <input type="checkbox" name="is_legendary">
+                Es legendario
+            </label>
+
+            <fieldset>
+                <legend>Stats</legend>
+                <input type="number" name="hp" placeholder="HP">
+                <input type="number" name="attack" placeholder="Ataque">
+                <input type="number" name="defense" placeholder="Defensa">
+                <input type="number" name="special_attack" placeholder="Ataque especial">
+                <input type="number" name="special_defense" placeholder="Defensa especial">
+                <input type="number" name="speed" placeholder="Velocidad">
+            </fieldset>
+
+            <div class="actions">
+                <button class="button primary" type="submit">Guardar</button>
+                <a class="button" href="{{ url_for('pokemon.list_pokemon_route') }}">Cancelar</a>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

@@ -1,0 +1,5 @@
+Flask==3.0.3
+pymongo[srv]>=4.11.0
+python-dotenv==1.0.1
+requests==2.32.3
+certifi>=2025.1.31

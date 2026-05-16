@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pokemon.name|capitalize }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% include "partials/navbar.html" %}
+
+    <main class="container">
+        <a class="button" href="{{ url_for('pokemon.list_pokemon_route') }}">Volver</a>
+
+        <section class="detail-layout">
+            <article class="detail-main">
+                <div class="card-top">
+                    <span class="number">#{{ pokemon.pokedex_number }}</span>
+                    {% if pokemon.is_legendary %}
+                        <span class="badge legendary">Legendario</span>
+                    {% endif %}
+                </div>
+
+                {% if pokemon.sprite %}
+                    <img class="detail-sprite" src="{{ pokemon.sprite }}" alt="{{ pokemon.name }}">
+                {% endif %}
+
+                <h1>{{ pokemon.name|capitalize }}</h1>
+                <p>{{ pokemon.description }}</p>
+
+                <div class="tags">
+                    {% for type in pokemon.types %}
+                        <span class="tag">{{ type }}</span>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <article class="detail-panel">
+                <h2>Información</h2>
+                <dl class="info-list">
+                    <div>
+                        <dt>Altura</dt>
+                        <dd>{{ pokemon.height }} m</dd>
+                    </div>
+                    <div>
+                        <dt>Peso</dt>
+                        <dd>{{ pokemon.weight }} kg</dd>
+                    </div>
+                    <div>
+                        <dt>Tipos</dt>
+                        <dd>{{ pokemon.types|join(', ') }}</dd>
+                    </div>
+                    <div>
+                        <dt>Habilidades</dt>
+                        <dd>{{ pokemon.abilities|join(', ') }}</dd>
+                    </div>
+                </dl>
+
+                <div class="actions">
+                    <a class="button primary" href="{{ url_for('pokemon.edit_form_route', pokemon_id=pokemon._id) }}">Editar</a>
+                    <form method="POST" action="{{ url_for('pokemon.delete_route', pokemon_id=pokemon._id) }}">
+                        <button class="button danger" type="submit">Eliminar</button>
+                    </form>
+                </div>
+            </article>
+        </section>
+
+        <section class="detail-stats">
+            <h2>Estadísticas completas</h2>
+
+            {% set stat_items = [
+                ('HP', pokemon.stats.hp),
+                ('Ataque', pokemon.stats.attack),
+                ('Defensa', pokemon.stats.defense),
+                ('Ataque especial', pokemon.stats.special_attack or 0),
+                ('Defensa especial', pokemon.stats.special_defense or 0),
+                ('Velocidad', pokemon.stats.speed)
+            ] %}
+
+            {% for label, value in stat_items %}
+                <div class="stat-row">
+                    <span>{{ label }}</span>
+                    <div class="stat-bar">
+                        <div style="width: {{ [value, 160]|min / 160 * 100 }}%"></div>
+                    </div>
+                    <strong>{{ value }}</strong>
+                </div>
+            {% endfor %}
+        </section>
+    </main>
+</body>
+</html>

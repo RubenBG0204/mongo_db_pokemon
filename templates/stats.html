@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% include "partials/navbar.html" %}
+
+    <main class="container">
+        <h1>Estadísticas</h1>
+
+        <section class="stats">
+            <article class="stat-card">
+                <h2>Promedio de altura</h2>
+                <p class="stat-number">{{ average_height.average_height }} m</p>
+                <p>Total calculado: {{ average_height.total }}</p>
+            </article>
+
+            <article class="stat-card">
+                <h2>Cantidad por tipo</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in count_by_type %}
+                            <tr>
+                                <td>{{ item.type }}</td>
+                                <td>{{ item.total }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="2">No hay datos.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </article>
+        </section>
+    </main>
+</body>
+</html>
