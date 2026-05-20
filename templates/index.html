@@ -22,11 +22,6 @@
             <input type="number" step="0.1" name="max_height" placeholder="Altura máxima" value="{{ filters.get('max_height', '') }}">
             <input type="text" name="types" placeholder="Tipos separados por coma" value="{{ filters.get('types', '') }}">
             <input type="number" name="types_size" placeholder="Número de tipos" value="{{ filters.get('types_size', '') }}">
-            <select name="has_sprite">
-                <option value="">Imagen</option>
-                <option value="yes" {% if filters.get('has_sprite') == 'yes' %}selected{% endif %}>Con sprite</option>
-                <option value="no" {% if filters.get('has_sprite') == 'no' %}selected{% endif %}>Sin sprite</option>
-            </select>
             <button class="button primary" type="submit">Filtrar</button>
             <a class="button" href="{{ url_for('pokemon.list_pokemon_route') }}">Limpiar</a>
         </form>
@@ -39,9 +34,14 @@
                     <a class="card-link" href="{{ url_for('pokemon.detail_route', pokemon_id=item._id) }}">
                         <div class="card-top">
                             <span class="number">#{{ item.pokedex_number }}</span>
-                            {% if item.is_legendary %}
-                                <span class="badge legendary">Legendario</span>
-                            {% endif %}
+                            <div class="badges">
+                                {% if item.is_legendary %}
+                                    <span class="badge legendary">Legendario</span>
+                                {% endif %}
+                                {% if item.is_mythical or item.pokedex_number == 151 %}
+                                    <span class="badge mythical">Singular</span>
+                                {% endif %}
+                            </div>
                         </div>
 
                         {% if item.sprite %}
@@ -51,25 +51,17 @@
                         <h2>{{ item.name|capitalize }}</h2>
                         <p>{{ item.description }}</p>
 
-                        <div class="tags">
-                            {% for type in item.types %}
-                                <span class="tag">{{ type }}</span>
-                            {% endfor %}
-                        </div>
-
                         <ul class="details">
                             <li>Altura: {{ item.height }} m</li>
                             <li>Peso: {{ item.weight }} kg</li>
-                            <li>Tipos: {{ item.types|length }}</li>
                         </ul>
+
+                        <div class="top-stat-card">
+                            <span>Mejor stat</span>
+                            <strong>{{ item.top_stat_name }}: {{ item.top_stat_value }}</strong>
+                        </div>
                     </a>
 
-                    <div class="actions">
-                        <a class="button" href="{{ url_for('pokemon.edit_form_route', pokemon_id=item._id) }}">Editar</a>
-                        <form method="POST" action="{{ url_for('pokemon.delete_route', pokemon_id=item._id) }}">
-                            <button class="button danger" type="submit">Eliminar</button>
-                        </form>
-                    </div>
                 </article>
             {% else %}
                 <p>No hay Pokémon con esos filtros.</p>

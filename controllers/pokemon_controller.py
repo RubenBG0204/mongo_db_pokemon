@@ -7,6 +7,8 @@ from models.pokemon_model import (
     get_average_height,
     get_count_by_type,
     get_pokemon_by_id,
+    get_pokemon_by_number,
+    get_top_total_stats,
     update_pokemon,
 )
 from utils.filters import build_pokemon_filters
@@ -15,6 +17,7 @@ from utils.filters import build_pokemon_filters
 def list_pokemon():
     filters = build_pokemon_filters(request.args)
     pokemon = get_all_pokemon(filters)
+    pokemon = [_add_top_stat(item) for item in pokemon]
     return render_template("index.html", pokemon=pokemon, filters=request.args)
 
 
@@ -38,6 +41,11 @@ def show_pokemon_detail(pokemon_id):
     return render_template("detail.html", pokemon=pokemon)
 
 
+def show_pokemon_detail_by_number(pokedex_number):
+    pokemon = get_pokemon_by_number(pokedex_number)
+    return render_template("detail.html", pokemon=pokemon)
+
+
 def update_pokemon_from_form(pokemon_id):
     data = _form_to_document(request.form)
     update_pokemon(pokemon_id, data)
@@ -52,10 +60,12 @@ def delete_pokemon_from_form(pokemon_id):
 def show_stats():
     average_height = get_average_height()
     count_by_type = get_count_by_type()
+    top_total_stats = get_top_total_stats()
     return render_template(
         "stats.html",
         average_height=average_height,
-        count_by_type=count_by_type
+        count_by_type=count_by_type,
+        top_total_stats=top_total_stats
     )
 
 
@@ -69,6 +79,7 @@ def _form_to_document(form):
         "height": float(form.get("height", 0)),
         "weight": float(form.get("weight", 0)),
         "is_legendary": form.get("is_legendary") == "on",
+        "is_mythical": form.get("is_mythical") == "on",
         "types": types,
         "abilities": abilities,
         "description": form.get("description", "").strip(),
@@ -82,3 +93,18 @@ def _form_to_document(form):
             "speed": int(form.get("speed", 0)),
         }
     }
+
+
+def _add_top_stat(pokemon):
+    stats = pokemon.get("stats", {})
+    candidates = {
+        "Vida": stats.get("hp", 0),
+        "Ataque": stats.get("attack", 0),
+        "Defensa": stats.get("defense", 0),
+        "Ataque especial": stats.get("special_attack", 0),
+        "Defensa especial": stats.get("special_defense", 0),
+    }
+    top_name, top_value = max(candidates.items(), key=lambda item: item[1])
+    pokemon["top_stat_name"] = top_name
+    pokemon["top_stat_value"] = top_value
+    return pokemon

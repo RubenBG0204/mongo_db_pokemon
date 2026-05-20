@@ -50,6 +50,11 @@
                 Es legendario
             </label>
 
+            <label class="checkbox">
+                <input type="checkbox" name="is_mythical" {% if pokemon.is_mythical or pokemon.pokedex_number == 151 %}checked{% endif %}>
+                Es singular
+            </label>
+
             <fieldset>
                 <legend>Stats</legend>
                 <input type="number" name="hp" placeholder="HP" value="{{ pokemon.stats.hp }}">

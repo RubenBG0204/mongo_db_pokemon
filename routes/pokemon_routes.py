@@ -6,6 +6,7 @@ from controllers.pokemon_controller import (
     list_pokemon,
     show_create_form,
     show_edit_form,
+    show_pokemon_detail_by_number,
     show_pokemon_detail,
     show_stats,
     update_pokemon_from_form,
@@ -38,6 +39,11 @@ def edit_form_route(pokemon_id):
 @pokemon_bp.get("/pokemon/<pokemon_id>")
 def detail_route(pokemon_id):
     return show_pokemon_detail(pokemon_id)
+
+
+@pokemon_bp.get("/pokemon/number/<int:pokedex_number>")
+def detail_by_number_route(pokedex_number):
+    return show_pokemon_detail_by_number(pokedex_number)
 
 
 @pokemon_bp.post("/edit/<pokemon_id>")

@@ -16,9 +16,14 @@
             <article class="detail-main">
                 <div class="card-top">
                     <span class="number">#{{ pokemon.pokedex_number }}</span>
-                    {% if pokemon.is_legendary %}
-                        <span class="badge legendary">Legendario</span>
-                    {% endif %}
+                    <div class="badges">
+                        {% if pokemon.is_legendary %}
+                            <span class="badge legendary">Legendario</span>
+                        {% endif %}
+                        {% if pokemon.is_mythical or pokemon.pokedex_number == 151 %}
+                            <span class="badge mythical">Singular</span>
+                        {% endif %}
+                    </div>
                 </div>
 
                 {% if pokemon.sprite %}
@@ -30,9 +35,31 @@
 
                 <div class="tags">
                     {% for type in pokemon.types %}
-                        <span class="tag">{{ type }}</span>
+                        <span class="tag type-{{ type }}">{{ type }}</span>
                     {% endfor %}
                 </div>
+
+                {% if pokemon.previous_evolutions or pokemon.next_evolutions %}
+                    <div class="evolution-links">
+                        <div class="evolution-side evolution-previous">
+                            {% for evolution in pokemon.previous_evolutions %}
+                                <a class="evolution-link" href="{{ url_for('pokemon.detail_by_number_route', pokedex_number=evolution.pokedex_number) }}">
+                                    <img src="{{ evolution.sprite }}" alt="{{ evolution.name }}">
+                                    <span>{{ evolution.name|capitalize }}</span>
+                                </a>
+                            {% endfor %}
+                        </div>
+
+                        <div class="evolution-side evolution-next">
+                            {% for evolution in pokemon.next_evolutions %}
+                                <a class="evolution-link" href="{{ url_for('pokemon.detail_by_number_route', pokedex_number=evolution.pokedex_number) }}">
+                                    <img src="{{ evolution.sprite }}" alt="{{ evolution.name }}">
+                                    <span>{{ evolution.name|capitalize }}</span>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
             </article>
 
             <article class="detail-panel">
@@ -53,6 +80,14 @@
                     <div>
                         <dt>Habilidades</dt>
                         <dd>{{ pokemon.abilities|join(', ') }}</dd>
+                    </div>
+                    <div>
+                        <dt>Legendario</dt>
+                        <dd>{% if pokemon.is_legendary %}Sí{% else %}No{% endif %}</dd>
+                    </div>
+                    <div>
+                        <dt>Singular</dt>
+                        <dd>{% if pokemon.is_mythical or pokemon.pokedex_number == 151 %}Sí{% else %}No{% endif %}</dd>
                     </div>
                 </dl>
 

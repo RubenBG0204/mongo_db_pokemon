@@ -14,6 +14,10 @@ def get_pokemon_by_id(pokemon_id):
     return pokemon_collection.find_one({"_id": ObjectId(pokemon_id)})
 
 
+def get_pokemon_by_number(pokedex_number):
+    return pokemon_collection.find_one({"pokedex_number": int(pokedex_number)})
+
+
 def create_pokemon(data):
     now = datetime.utcnow()
     data["created_at"] = now
@@ -87,5 +91,32 @@ def get_count_by_type():
                 "total": 1
             }
         }
+    ]
+    return list(pokemon_collection.aggregate(pipeline))
+
+
+def get_top_total_stats(limit=5):
+    pipeline = [
+        {"$match": {"stats": {"$exists": True}}},
+        {
+            "$project": {
+                "_id": 0,
+                "pokedex_number": 1,
+                "name": 1,
+                "sprite": 1,
+                "total_stats": {
+                    "$sum": [
+                        "$stats.hp",
+                        "$stats.attack",
+                        "$stats.defense",
+                        "$stats.special_attack",
+                        "$stats.special_defense",
+                        "$stats.speed"
+                    ]
+                }
+            }
+        },
+        {"$sort": {"total_stats": -1, "pokedex_number": 1}},
+        {"$limit": limit}
     ]
     return list(pokemon_collection.aggregate(pipeline))
