@@ -11,6 +11,7 @@ from models.pokemon_model import (
     get_top_total_stats,
     update_pokemon,
 )
+from utils.evolutions import add_evolution_info, fetch_evolutions_from_pokeapi
 from utils.filters import build_pokemon_filters
 from utils.mega_evolutions import add_mega_evolution_info, get_mega_evolution_fields
 
@@ -38,6 +39,7 @@ def show_edit_form(pokemon_id):
     pokemon = get_pokemon_by_id(pokemon_id)
     # Completa informacion de megaevolucion antes de mostrar el formulario.
     pokemon = add_mega_evolution_info(pokemon)
+    pokemon = add_evolution_info(pokemon)
     return render_template("edit.html", pokemon=pokemon)
 
 
@@ -45,12 +47,17 @@ def show_pokemon_detail(pokemon_id):
     pokemon = get_pokemon_by_id(pokemon_id)
     # Completa informacion calculada que no siempre esta guardada.
     pokemon = add_mega_evolution_info(pokemon)
+    pokemon = add_evolution_info(pokemon)
     return render_template("detail.html", pokemon=pokemon)
 
 
 def show_pokemon_detail_by_number(pokedex_number):
     pokemon = get_pokemon_by_number(pokedex_number)
+    if not pokemon:
+        return redirect(url_for("pokemon.list_pokemon_route"))
+
     pokemon = add_mega_evolution_info(pokemon)
+    pokemon = add_evolution_info(pokemon)
     return render_template("detail.html", pokemon=pokemon)
 
 
@@ -88,6 +95,7 @@ def _form_to_document(form):
         force=form.get("can_mega_evolve") == "on",
         detect_known=True,
     )
+    evolutions = fetch_evolutions_from_pokeapi(name, form.get("pokedex_number", 0))
 
     return {
         "pokedex_number": int(form.get("pokedex_number", 0)),
@@ -102,6 +110,8 @@ def _form_to_document(form):
         "abilities": abilities,
         "description": form.get("description", "").strip(),
         "sprite": form.get("sprite", "").strip(),
+        "previous_evolutions": evolutions["previous_evolutions"],
+        "next_evolutions": evolutions["next_evolutions"],
         "stats": {
             "hp": int(form.get("hp", 0)),
             "attack": int(form.get("attack", 0)),

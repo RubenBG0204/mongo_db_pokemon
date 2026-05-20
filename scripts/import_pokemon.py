@@ -2,20 +2,18 @@ import os
 import sys
 import time
 
-import requests
-
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ROOT_DIR)
 
 from config.db import validate_mongo_uri  # noqa: E402
 from models.pokemon_model import upsert_pokemon  # noqa: E402
+from utils.evolutions import get_evolution_chain, get_evolution_info, get_json  # noqa: E402
 from utils.mega_evolutions import get_mega_evolution_fields  # noqa: E402
 
 
 POKEAPI_URL = "https://pokeapi.co/api/v2/pokemon"
 TOTAL_POKEMON = 151
-EVOLUTION_CACHE = {}
 
 
 def import_first_generation():
@@ -34,24 +32,6 @@ def import_first_generation():
         time.sleep(0.1)
 
     print("Importacion finalizada")
-
-
-def get_json(url):
-    # Peticion HTTP sencilla con timeout y control de errores.
-    response = requests.get(url, timeout=20)
-    response.raise_for_status()
-    return response.json()
-
-
-def get_evolution_chain(species_data):
-    # Cachea cadenas evolutivas para no pedir la misma URL varias veces.
-    url = species_data["evolution_chain"]["url"]
-
-    if url not in EVOLUTION_CACHE:
-        EVOLUTION_CACHE[url] = get_json(url)
-
-    return EVOLUTION_CACHE[url]
-
 
 def transform_pokemon(pokemon_data, species_data, evolution_chain):
     # Limpia y adapta la respuesta de PokeAPI al formato de MongoDB.
@@ -86,62 +66,6 @@ def transform_pokemon(pokemon_data, species_data, evolution_chain):
             "speed": stats.get("speed", 0),
         }
     }
-
-
-def get_evolution_info(current_name, evolution_chain):
-    # Recorre el arbol evolutivo para encontrar evolucion anterior y siguiente.
-    evolution_map = {}
-
-    def walk(node, previous):
-        current = build_evolution_item(node["species"])
-        next_evolutions = [
-            build_evolution_item(child["species"])
-            for child in node.get("evolves_to", [])
-        ]
-
-        evolution_map[current["name"]] = {
-            "previous_evolutions": [previous] if previous else [],
-            "next_evolutions": next_evolutions,
-        }
-
-        for child in node.get("evolves_to", []):
-            walk(child, current)
-
-    walk(evolution_chain["chain"], None)
-    result = evolution_map.get(current_name)
-
-    if not result:
-        return {"previous_evolutions": [], "next_evolutions": []}
-
-    return {
-        "previous_evolutions": filter_first_generation(result["previous_evolutions"]),
-        "next_evolutions": filter_first_generation(result["next_evolutions"]),
-    }
-
-
-def build_evolution_item(species):
-    # Crea los datos minimos para enlazar evoluciones.
-    pokedex_number = extract_id_from_url(species["url"])
-
-    return {
-        "name": species["name"],
-        "pokedex_number": pokedex_number,
-        "sprite": f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pokedex_number}.png",
-    }
-
-
-def extract_id_from_url(url):
-    return int(url.rstrip("/").split("/")[-1])
-
-
-def filter_first_generation(evolutions):
-    # En esta practica solo se muestran evoluciones de primera generacion.
-    return [
-        item
-        for item in evolutions
-        if item["pokedex_number"] <= TOTAL_POKEMON
-    ]
-
 
 def get_spanish_description(species_data):
     # Prioriza descripcion en castellano; si no existe, usa ingles.
