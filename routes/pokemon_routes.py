@@ -16,6 +16,7 @@ from controllers.pokemon_controller import (
 pokemon_bp = Blueprint("pokemon", __name__)
 
 
+# Cada ruta llama a una funcion del controlador.
 @pokemon_bp.get("/")
 def list_pokemon_route():
     return list_pokemon()

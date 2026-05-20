@@ -1,3 +1,4 @@
+# Megapiedras conocidas por nombre de Pokemon.
 MEGA_EVOLUTIONS = {
     "venusaur": ["venusaurite"],
     "charizard": ["charizardite-x", "charizardite-y"],
@@ -96,7 +97,7 @@ EXTRA_MEGA_STONES = {
 # Mega Rayquaza no usa megapiedra.
 SPECIAL_MEGA_EVOLUTIONS = {"rayquaza"}
 
-# PokéAPI aún no tiene sprites de varias piedras nuevas.
+# PokeAPI aun no tiene sprites de varias piedras nuevas.
 IMAGELESS_STONES = {
     "absolite-z",
     "barbaracite",
@@ -146,6 +147,7 @@ IMAGELESS_STONES = {
 
 
 def add_mega_evolution_info(pokemon):
+    # Anade datos de megaevolucion antes de pintar detalle o editar.
     if not pokemon:
         return pokemon
 
@@ -160,6 +162,7 @@ def add_mega_evolution_info(pokemon):
 
 
 def get_mega_evolution_fields(name, force=False, detect_known=True):
+    # Devuelve si puede megaevolucionar y que piedras debe mostrar.
     clean_name = name.strip().lower()
     stones = MEGA_EVOLUTIONS.get(clean_name, []) + EXTRA_MEGA_STONES.get(clean_name, [])
 
@@ -187,6 +190,7 @@ def get_mega_evolution_fields(name, force=False, detect_known=True):
 
 
 def build_stone(stone):
+    # Monta el nombre visible y la imagen si existe en PokeAPI.
     return {
         "name": format_stone_name(stone),
         "image": "" if stone in IMAGELESS_STONES else f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/{stone}.png",
@@ -194,4 +198,5 @@ def build_stone(stone):
 
 
 def format_stone_name(stone):
+    # Convierte charizardite-x en Charizardite X.
     return stone.replace("-", " ").title()

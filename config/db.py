@@ -16,6 +16,7 @@ _cached_collection = None
 
 
 def validate_mongo_uri():
+    # Comprueba que la cadena de Atlas existe y no contiene placeholders.
     if not MONGO_URI:
         raise RuntimeError("Falta MONGO_URI en el archivo .env")
 
@@ -33,6 +34,7 @@ def validate_mongo_uri():
 def get_collection():
     global _cached_collection
 
+    # Reutiliza la coleccion para no abrir conexiones repetidas.
     if _cached_collection is not None:
         return _cached_collection
 
@@ -45,6 +47,7 @@ def get_collection():
             tls=True,
             tlsCAFile=certifi.where()
         )
+        # Fuerza una prueba real de conexion con Atlas.
         client.admin.command("ping")
     except ConfigurationError as error:
         raise RuntimeError(f"MONGO_URI no es valida: {error}") from error
@@ -70,7 +73,7 @@ def get_collection():
     db = client[DB_NAME]
     collection = db[COLLECTION_NAME]
 
-    # Evita duplicados al importar.
+    # Indices basicos para evitar duplicados y acelerar busquedas.
     collection.create_index("pokedex_number", unique=True)
     collection.create_index("name")
 
@@ -79,6 +82,7 @@ def get_collection():
 
 
 class LazyPokemonCollection:
+    # Retrasa la conexion hasta que se usa la coleccion.
     def __getattr__(self, name):
         return getattr(get_collection(), name)
 

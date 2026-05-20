@@ -19,6 +19,7 @@ EVOLUTION_CACHE = {}
 
 
 def import_first_generation():
+    # Importa los 151 primeros Pokemon desde PokeAPI.
     validate_mongo_uri()
 
     for number in range(1, TOTAL_POKEMON + 1):
@@ -36,12 +37,14 @@ def import_first_generation():
 
 
 def get_json(url):
+    # Peticion HTTP sencilla con timeout y control de errores.
     response = requests.get(url, timeout=20)
     response.raise_for_status()
     return response.json()
 
 
 def get_evolution_chain(species_data):
+    # Cachea cadenas evolutivas para no pedir la misma URL varias veces.
     url = species_data["evolution_chain"]["url"]
 
     if url not in EVOLUTION_CACHE:
@@ -51,6 +54,7 @@ def get_evolution_chain(species_data):
 
 
 def transform_pokemon(pokemon_data, species_data, evolution_chain):
+    # Limpia y adapta la respuesta de PokeAPI al formato de MongoDB.
     stats = {
         item["stat"]["name"]: item["base_stat"]
         for item in pokemon_data["stats"]
@@ -85,6 +89,7 @@ def transform_pokemon(pokemon_data, species_data, evolution_chain):
 
 
 def get_evolution_info(current_name, evolution_chain):
+    # Recorre el arbol evolutivo para encontrar evolucion anterior y siguiente.
     evolution_map = {}
 
     def walk(node, previous):
@@ -115,6 +120,7 @@ def get_evolution_info(current_name, evolution_chain):
 
 
 def build_evolution_item(species):
+    # Crea los datos minimos para enlazar evoluciones.
     pokedex_number = extract_id_from_url(species["url"])
 
     return {
@@ -129,6 +135,7 @@ def extract_id_from_url(url):
 
 
 def filter_first_generation(evolutions):
+    # En esta practica solo se muestran evoluciones de primera generacion.
     return [
         item
         for item in evolutions
@@ -137,6 +144,7 @@ def filter_first_generation(evolutions):
 
 
 def get_spanish_description(species_data):
+    # Prioriza descripcion en castellano; si no existe, usa ingles.
     for entry in species_data.get("flavor_text_entries", []):
         if entry["language"]["name"] == "es":
             return clean_text(entry["flavor_text"])
@@ -149,6 +157,7 @@ def get_spanish_description(species_data):
 
 
 def clean_text(text):
+    # Quita saltos raros que devuelve PokeAPI.
     return text.replace("\n", " ").replace("\f", " ").strip()
 
 

@@ -10,11 +10,13 @@
     {% include "partials/navbar.html" %}
 
     <main class="container">
+        <!-- Cabecera con titulo y acceso al formulario de creacion. -->
         <section class="page-header">
             <h1>Lista Pokémon</h1>
             <a class="button primary" href="{{ url_for('pokemon.create_form_route') }}">Nuevo Pokémon</a>
         </section>
 
+        <!-- Formulario GET: envia los filtros al controlador. -->
         <form class="filters" method="GET" action="{{ url_for('pokemon.list_pokemon_route') }}">
             <input type="text" name="name" placeholder="Buscar por nombre" value="{{ filters.get('name', '') }}">
             <input type="text" name="description" placeholder="Descripción" value="{{ filters.get('description', '') }}">
@@ -28,6 +30,7 @@
 
         <p class="total">Total encontrados: {{ pokemon|length }}</p>
 
+        <!-- Tarjetas de Pokemon encontradas. -->
         <section class="grid">
             {% for item in pokemon %}
                 <article class="card">

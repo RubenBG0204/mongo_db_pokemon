@@ -15,6 +15,7 @@ from utils.filters import build_pokemon_filters
 from utils.mega_evolutions import add_mega_evolution_info, get_mega_evolution_fields
 
 
+# Vista principal: aplica filtros y prepara la mejor stat para cada tarjeta.
 def list_pokemon():
     filters = build_pokemon_filters(request.args)
     pokemon = get_all_pokemon(filters)
@@ -22,6 +23,7 @@ def list_pokemon():
     return render_template("index.html", pokemon=pokemon, filters=request.args)
 
 
+# Formularios y acciones CRUD.
 def show_create_form():
     return render_template("create.html")
 
@@ -34,12 +36,14 @@ def create_pokemon_from_form():
 
 def show_edit_form(pokemon_id):
     pokemon = get_pokemon_by_id(pokemon_id)
+    # Completa informacion de megaevolucion antes de mostrar el formulario.
     pokemon = add_mega_evolution_info(pokemon)
     return render_template("edit.html", pokemon=pokemon)
 
 
 def show_pokemon_detail(pokemon_id):
     pokemon = get_pokemon_by_id(pokemon_id)
+    # Completa informacion calculada que no siempre esta guardada.
     pokemon = add_mega_evolution_info(pokemon)
     return render_template("detail.html", pokemon=pokemon)
 
@@ -62,6 +66,7 @@ def delete_pokemon_from_form(pokemon_id):
 
 
 def show_stats():
+    # Datos preparados con aggregation framework.
     average_height = get_average_height()
     count_by_type = get_count_by_type()
     top_total_stats = get_top_total_stats()
@@ -74,6 +79,7 @@ def show_stats():
 
 
 def _form_to_document(form):
+    # Convierte datos del formulario HTML en documento MongoDB.
     types = [item.strip().lower() for item in form.get("types", "").split(",") if item.strip()]
     abilities = [item.strip().lower() for item in form.get("abilities", "").split(",") if item.strip()]
     name = form.get("name", "").strip().lower()
@@ -108,6 +114,7 @@ def _form_to_document(form):
 
 
 def _add_top_stat(pokemon):
+    # Calcula la stat mas alta que se muestra en la tarjeta.
     stats = pokemon.get("stats", {})
     candidates = {
         "Vida": stats.get("hp", 0),

@@ -12,6 +12,7 @@
     <main class="container narrow">
         <h1>Editar Pokémon</h1>
 
+        <!-- Formulario con los datos actuales del Pokemon. -->
         <form class="form" method="POST" action="{{ url_for('pokemon.edit_route', pokemon_id=pokemon._id) }}">
             <label>Número Pokédex
                 <input type="number" name="pokedex_number" value="{{ pokemon.pokedex_number }}" required>
@@ -60,6 +61,7 @@
                 Puede mega-evolucionar
             </label>
 
+            <!-- Stats guardadas como documento embebido. -->
             <fieldset>
                 <legend>Stats</legend>
                 <input type="number" name="hp" placeholder="HP" value="{{ pokemon.stats.hp }}">

@@ -5,6 +5,7 @@ from bson import ObjectId
 from config.db import pokemon_collection
 
 
+# Operaciones CRUD basicas.
 def get_all_pokemon(filters=None):
     filters = filters or {}
     return list(pokemon_collection.find(filters).sort("pokedex_number", 1))
@@ -19,6 +20,7 @@ def get_pokemon_by_number(pokedex_number):
 
 
 def create_pokemon(data):
+    # Guarda fechas de creacion y actualizacion.
     now = datetime.utcnow()
     data["created_at"] = now
     data["updated_at"] = now
@@ -38,6 +40,7 @@ def delete_pokemon(pokemon_id):
 
 
 def upsert_pokemon(data):
+    # Inserta o actualiza durante la importacion desde PokeAPI.
     now = datetime.utcnow()
     data["updated_at"] = now
 
@@ -52,6 +55,7 @@ def upsert_pokemon(data):
 
 
 def get_average_height():
+    # Aggregation: calcula la altura media.
     pipeline = [
         {"$match": {"height": {"$exists": True}}},
         {
@@ -74,6 +78,7 @@ def get_average_height():
 
 
 def get_count_by_type():
+    # Aggregation: separa el array de tipos y cuenta cada tipo.
     pipeline = [
         {"$match": {"types": {"$exists": True}}},
         {"$unwind": "$types"},
@@ -96,6 +101,7 @@ def get_count_by_type():
 
 
 def get_top_total_stats(limit=5):
+    # Aggregation: suma todas las stats y ordena de mayor a menor.
     pipeline = [
         {"$match": {"stats": {"$exists": True}}},
         {

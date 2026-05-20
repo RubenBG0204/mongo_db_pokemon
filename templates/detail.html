@@ -12,6 +12,7 @@
     <main class="container">
         <a class="button" href="{{ url_for('pokemon.list_pokemon_route') }}">Volver</a>
 
+        <!-- Vista completa del Pokemon seleccionado. -->
         <section class="detail-layout">
             <article class="detail-main">
                 <div class="card-top">
@@ -39,6 +40,7 @@
                     {% endfor %}
                 </div>
 
+                <!-- Bloque de megaevolucion y megapiedras. -->
                 {% if pokemon.can_mega_evolve %}
                     <div class="mega-evolution">
                         <div class="mega-stones">
@@ -54,6 +56,7 @@
                     </div>
                 {% endif %}
 
+                <!-- Miniaturas de preevolucion y evolucion siguiente. -->
                 {% if pokemon.previous_evolutions or pokemon.next_evolutions %}
                     <div class="evolution-links">
                         <div class="evolution-side evolution-previous">
@@ -77,6 +80,7 @@
                 {% endif %}
             </article>
 
+            <!-- Datos principales y botones de gestion. -->
             <article class="detail-panel">
                 <h2>Información</h2>
                 <dl class="info-list">
@@ -115,6 +119,7 @@
             </article>
         </section>
 
+        <!-- Barras con todas las estadisticas base. -->
         <section class="detail-stats">
             <h2>Estadísticas completas</h2>
 
