@@ -10,6 +10,7 @@ sys.path.append(ROOT_DIR)
 
 from config.db import validate_mongo_uri  # noqa: E402
 from models.pokemon_model import upsert_pokemon  # noqa: E402
+from utils.mega_evolutions import get_mega_evolution_fields  # noqa: E402
 
 
 POKEAPI_URL = "https://pokeapi.co/api/v2/pokemon"
@@ -55,6 +56,7 @@ def transform_pokemon(pokemon_data, species_data, evolution_chain):
         for item in pokemon_data["stats"]
     }
     evolutions = get_evolution_info(pokemon_data["name"], evolution_chain)
+    mega_fields = get_mega_evolution_fields(pokemon_data["name"])
 
     return {
         "pokedex_number": pokemon_data["id"],
@@ -63,6 +65,8 @@ def transform_pokemon(pokemon_data, species_data, evolution_chain):
         "weight": pokemon_data["weight"] / 10,
         "is_legendary": species_data.get("is_legendary", False),
         "is_mythical": species_data.get("is_mythical", False),
+        "can_mega_evolve": mega_fields["can_mega_evolve"],
+        "mega_stones": mega_fields["mega_stones"],
         "types": [item["type"]["name"] for item in pokemon_data["types"]],
         "abilities": [item["ability"]["name"] for item in pokemon_data["abilities"]],
         "description": get_spanish_description(species_data),

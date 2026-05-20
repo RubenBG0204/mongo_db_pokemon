@@ -273,6 +273,42 @@ textarea {
     color: #1f2937;
 }
 
+.mega-evolution {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+    margin-top: 12px;
+    padding: 8px 12px;
+    border: 1px solid #f5c542;
+    border-radius: 999px;
+    color: #78350f;
+    background: #fffbeb;
+    font-weight: bold;
+}
+
+.mega-stones {
+    display: flex;
+    gap: 4px;
+}
+
+.mega-stones img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.stone-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #fde68a;
+    color: #78350f;
+    font-size: 12px;
+}
+
 .details {
     padding-left: 18px;
     margin-bottom: 12px;

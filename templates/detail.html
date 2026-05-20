@@ -39,6 +39,21 @@
                     {% endfor %}
                 </div>
 
+                {% if pokemon.can_mega_evolve %}
+                    <div class="mega-evolution">
+                        <div class="mega-stones">
+                            {% for stone in pokemon.mega_stones %}
+                                {% if stone.image %}
+                                    <img src="{{ stone.image }}" alt="{{ stone.name }}" title="{{ stone.name }}">
+                                {% else %}
+                                    <span class="stone-chip">{{ stone.name }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span>Puede mega-evolucionar</span>
+                    </div>
+                {% endif %}
+
                 {% if pokemon.previous_evolutions or pokemon.next_evolutions %}
                     <div class="evolution-links">
                         <div class="evolution-side evolution-previous">

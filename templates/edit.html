@@ -55,6 +55,11 @@
                 Es singular
             </label>
 
+            <label class="checkbox">
+                <input type="checkbox" name="can_mega_evolve" {% if pokemon.can_mega_evolve %}checked{% endif %}>
+                Puede mega-evolucionar
+            </label>
+
             <fieldset>
                 <legend>Stats</legend>
                 <input type="number" name="hp" placeholder="HP" value="{{ pokemon.stats.hp }}">

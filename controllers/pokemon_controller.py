@@ -12,6 +12,7 @@ from models.pokemon_model import (
     update_pokemon,
 )
 from utils.filters import build_pokemon_filters
+from utils.mega_evolutions import add_mega_evolution_info, get_mega_evolution_fields
 
 
 def list_pokemon():
@@ -33,16 +34,19 @@ def create_pokemon_from_form():
 
 def show_edit_form(pokemon_id):
     pokemon = get_pokemon_by_id(pokemon_id)
+    pokemon = add_mega_evolution_info(pokemon)
     return render_template("edit.html", pokemon=pokemon)
 
 
 def show_pokemon_detail(pokemon_id):
     pokemon = get_pokemon_by_id(pokemon_id)
+    pokemon = add_mega_evolution_info(pokemon)
     return render_template("detail.html", pokemon=pokemon)
 
 
 def show_pokemon_detail_by_number(pokedex_number):
     pokemon = get_pokemon_by_number(pokedex_number)
+    pokemon = add_mega_evolution_info(pokemon)
     return render_template("detail.html", pokemon=pokemon)
 
 
@@ -72,14 +76,22 @@ def show_stats():
 def _form_to_document(form):
     types = [item.strip().lower() for item in form.get("types", "").split(",") if item.strip()]
     abilities = [item.strip().lower() for item in form.get("abilities", "").split(",") if item.strip()]
+    name = form.get("name", "").strip().lower()
+    mega_fields = get_mega_evolution_fields(
+        name,
+        force=form.get("can_mega_evolve") == "on",
+        detect_known=True,
+    )
 
     return {
         "pokedex_number": int(form.get("pokedex_number", 0)),
-        "name": form.get("name", "").strip().lower(),
+        "name": name,
         "height": float(form.get("height", 0)),
         "weight": float(form.get("weight", 0)),
         "is_legendary": form.get("is_legendary") == "on",
         "is_mythical": form.get("is_mythical") == "on",
+        "can_mega_evolve": mega_fields["can_mega_evolve"],
+        "mega_stones": mega_fields["mega_stones"],
         "types": types,
         "abilities": abilities,
         "description": form.get("description", "").strip(),
